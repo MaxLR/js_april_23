@@ -1,5 +1,5 @@
 /* 
-  https://visualgo.net/en/sorting
+https://www.hackerearth.com/practice/algorithms/sorting/selection-sort/visualize/
     
   Selection sort works by iterating through the list, finding the minimum
   value, and moving it to the beginning of the list. Then, ignoring the first

@@ -24,4 +24,22 @@ const expected = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
  * @param {Array<number>} numbers
  * @returns {Array<number>} The given numbers after being sorted.
  */
-function bubbleSort(numbers = []) { }
+function bubbleSort(numbers = []) {
+	let isSorted = false;
+
+	while (isSorted === false) {
+		isSorted = true;
+
+		for (let i = 0; i < numbers.length - 1; i++) {
+			const j = i + 1;
+
+			if (numbers[i] > numbers[j]) {
+				isSorted = false;
+				const temp = numbers[i];
+				numbers[i] = numbers[j];
+				numbers[j] = temp;
+			}
+		}
+	}
+	return numbers;
+}

@@ -46,8 +46,37 @@ const expectedMerge4 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
  * @returns {Array<number>} A new sorted array containing all the elements of
  *    both given halves.
  */
-function merge(left = [], right = []) { }
+function merge(left = [], right = []) {
+    let result = [];
+    let indexLeft = 0;
+    let indexRight = 0;
 
+    while (indexLeft < left.length && indexRight < right.length) {
+        if (left[indexLeft] < right[indexRight]) {
+            result.push(left[indexLeft]);
+            indexLeft++;
+        } else {
+            result.push(right[indexRight]);
+            indexRight++;
+        }
+    }
+
+    // in case one of the arrays has remaining items due to unequal lengths, all of those can be added
+    while (indexLeft < left.length) {
+        result.push(left[indexLeft]);
+        indexLeft++;
+    }
+
+    while (indexRight < right.length) {
+        result.push(right[indexRight]);
+        indexRight++;
+    }
+
+    return result;
+
+    // one liner version of adding in any left over items
+    // return result.concat(left.slice(indexLeft)).concat(right.slice(indexRight));
+}
 // mergeSort
 const numbersOrdered = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 const numbersRandomOrder = [9, 2, 5, 6, 4, 3, 7, 10, 1, 8];
@@ -63,4 +92,16 @@ const expectedSort = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
  * @param {Array<number>} numbers
  * @returns {Array<number>} A New sorted array.
  */
-function mergeSort(numbers = []) { }
+function mergeSort(numbers = []) {
+    if (numbers.length === 1) {
+        // return once we hit an array with a single item
+        return numbers;
+    }
+
+    const middleIdx = Math.floor(numbers.length / 2);
+    const left = numbers.slice(0, middleIdx);
+    const right = numbers.slice(middleIdx);
+    const sortedLeft = mergeSort(left);
+    const sortedRight = mergeSort(right);
+    return merge(sortedLeft, sortedRight);
+}

@@ -38,11 +38,112 @@ const expected5 = [1, 2, 3];
  * Produces the symmetric differences, aka disjunctive union of two sets.
  * Venn Diagram Visualization:
  * @see https://miro.medium.com/max/3194/1*N3Z94nCNu8IHsFenIAELJw.jpeg
- * - Time: O(?).
- * - Space: O(?).
+ * - Time: O(2(n * m)) -> O(n * m), n = numbersA.length, m = numbersB.length the two constant 2 was because we are
+ *    doing the n * m twice. The constant 2 is dropped.
+ * - Space:  O(n + m) because potentially all items from each are kept.
  * @param  {Array<number>} numbersA
  * @param  {Array<number>} numbersB Both given sets are multisets in any order (contain dupes).
  * @returns {Array<number>} The union of the given sets but excluding the shared values (union without intersection).
  *    i.e., if the element is in one array and NOT the other, it should be included in the return.
  */
-function symmetricDifferences(numbersA, numbersB) { }
+function symmetricDifferences(numbersA, numbersB) {
+    const disjunctiveUnion = [];
+
+    for (const numberA of numbersA) {
+        if (
+            numbersB.includes(numberA) === false &&
+            disjunctiveUnion.includes(numberA) === false
+        ) {
+            disjunctiveUnion.push(numberA);
+        }
+    }
+
+    for (const numberB of numbersB) {
+        if (
+            numbersA.includes(numberB) === false &&
+            disjunctiveUnion.includes(numberB) === false
+        ) {
+            disjunctiveUnion.push(numberB);
+        }
+    }
+    return disjunctiveUnion;
+}
+
+/**
+ * - Time: O(2(n + m)) -> O(n) linear, n = numbersA.length, m = numbersB.length.
+ *    Each is looped over twice, once from the arr then again over it's seen hash table.
+ * - Space: O(2(n + m)) -> O(n) linear. Each arr is stored twice, once in it's own seen table and once in the output
+ *    array.
+ */
+function symmetricDifferencesHashTable(numbersA, numbersB) {
+    const seenA = {};
+    const seenB = {};
+    const disjunctiveUnion = [];
+
+    // O(n)
+    for (const num of numbersA) {
+        // adding the num as the value avoids having to convert the string key back to int
+        // O(1) - constant can be ignored. This happens n times.
+        seenA[num] = num;
+    }
+
+    // O(m)
+    for (const num of numbersB) {
+        // O(1) - constant can be ignored. This happens m times.
+        seenB[num] = num;
+    }
+
+    // O(n) - could be smaller because of dicts not storing dupes, but if no
+    // dupes it's same length.
+    for (const keyA in seenA) {
+        // O(1)
+        if (seenB.hasOwnProperty(keyA) === false) {
+            // O(1)
+            disjunctiveUnion.push(seenA[keyA]);
+        }
+    }
+
+    // O(m)
+    for (const keyB in seenB) {
+        // O(1)
+        if (seenA.hasOwnProperty(keyB) === false) {
+            // O(1)
+            disjunctiveUnion.push(seenB[keyB]);
+        }
+    }
+    return disjunctiveUnion;
+    /* 
+    Add all the O notations (multiple for things inside loops) but ignore the
+    constants.
+      O(n) + O(m) + O(n) + O(m) -> O(2n) + O(2m) -> O(2(n + m))
+      Drop the constant 2 and n + m is still linear: O(n) simplified.
+    */
+}
+
+function symmetricDifferencesSets(numbersA, numbersB) {
+    const disjunctiveUnion = new Set(numbersA);
+    // To dedupe set B as well so that when a num is deleted if won't accidentally
+    // be re-added below if there were a dupe
+    const setB = new Set(numbersB);
+
+    for (const itemB of setB) {
+        if (disjunctiveUnion.has(itemB)) {
+            disjunctiveUnion.delete(itemB);
+        } else {
+            disjunctiveUnion.add(itemB);
+        }
+    }
+    return [...disjunctiveUnion];
+}
+
+function symmetricDifferencesMath(numbersA, numbersB) {
+    // Find Union
+    const union = new Set([...numbersA, ...numbersB]);
+
+    // Find Intersect
+    const setA = new Set(numbersA);
+    const intersect = new Set(numbersB.filter((item) => setA.has(item)));
+
+    // Remove Intersect from Union
+    return [...union].filter((item) => !intersect.has(item));
+}
